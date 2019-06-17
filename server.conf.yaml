@@ -1,0 +1,253 @@
+---
+# ACE Integration Server configuration file
+#
+# General notes :
+#  - Integration Server will load server.conf.yaml from directory set via --work-dir
+#  - To ensure valid YAML avoid any use of TAB characters
+#  - File paths may be taken as absolute, or relative to the integration server's work directory
+#
+serverConfVersion: 1
+
+#lilPath: ''                 # A list of paths from where User-defined node LIL/JAR files are loaded. (multiple directories are separated by platform path separator)
+
+#deployMode: 'replace'       # Deploy mode: replace | none | manual
+
+#defaultQueueManager: ''     # Set non-empty string to specify a default queue manager
+#mqTrustedQueueManager: 'no' # Set to yes to enable MQ communication as a trusted (fastpath) application
+
+#trace: 'none'               # choose 1 of : none|service|diagnostic
+#traceSize: '1G'             # Set the service trace size
+#traceNodeLevel: true        # Enable or disable Trace Nodes
+
+#forceServerHTTPS: true      # force HTTPS on all HTTP/SOAP input nodes
+
+Log:
+  #consoleLog: true          # Control writing BIP messages to standard out. Set to true or false, default is true.
+  #outputFormat: 'text'      # Set the format for writing BIP messages ibmjson or text, default is text.
+  #eventLog: ''              # Control writing BIP messages to file. Set to '/path/log.txt' to enable, or '' to disable.
+                             # Default is <workdir>/log/integration_server.<server_name>.events.txt
+
+RestAdminListener:
+  #port: 7600                # Set the Admin REST API Port for ACE Web UI and Toolkit or -1 to disable. Defaults to 7600.
+
+  # Note the Admin REST API will be insecure without the following being set
+  #host: 'localhost'         # Set the hostname otherwise we bind to the unspecified address
+
+  # SSL Server auth
+  #sslCertificate: '/path/to/serverPKCS.p12'  # See comment below
+  #sslPassword: 'adminRestApi::sslpwd'        # See comment below
+
+  # If using a pem certificate:
+    # sslCertificate is the full path to the server certificate key
+    # sslPassword is the full path to the server private key, which must be a standard private key and not an encrypted one
+    # The file names must end with '.pem'
+  # If using p12/pfx certificate:
+    # sslCertificate is the full path to the server certificate store file
+    # sslPassword is the passphrase or alias to the passphrase of the certificate store
+
+  # SSL Client auth
+  #requireClientCert: true                    # Request a certificate from the client
+  #caPath: '/path/to/CA/certificates'         # CA certs, all files at this path will be read
+
+  # Admin Security
+  #  Authentication
+  #basicAuth: true                            # Clients web user name and password will be authenticated when set true
+  #  Authorization
+  #adminSecurity: 'inactive'                  # Clients web user role will be authorized when set active
+  #authMode: 'file'                           # Set admin authorization mode to file
+
+Security:
+  Permissions:
+    # Set Admin Security Authorization file permissions by web user role using 'read+:write+:execute+' , or 'all+'
+    # '+' grants permission, '-' denies permission
+    # e.g. define the following web user roles 'viewRole' and 'adminRole'
+    #viewRole:  'read+:write-:execute-'
+    #adminRole: 'all+'
+
+Defaults:
+  #defaultApplication: ''            # Name a default application under which independent resources will be placed
+  #policyProject: 'DefaultPolicies'  # Name of the Policy project that will be used for unqualified Policy references, default is 'DefaultPolicies'
+  Policies:
+    # Set default policy names, optionally qualified with a policy project as {policy project}:name
+    #HTTPConnector: ''           # Default HTTP connector policy
+    #HTTPSConnector: ''          # Default HTTPS connector policy
+    #monitoringProfile: ''       # Default Monitoring profile
+
+Events:
+  OperationalEvents: # Message flow and Resource statistics plus Workload management
+    MQ:
+      #policy: ''      # Specify a {policy project}:policy if not using  'defaultQueueManager'
+      #enabled: false  # Set true or false, default false
+      #format: ''      # Set string or none
+    MQTT:
+      #policy: ''      # Specify a {policy project}:policy
+      #enabled: false  # Set true or false, default false
+      #format: ''      # Set string or none
+  BusinessEvents: # Business monitoring events
+    MQ:
+      #policy: ''      # Specify a {policy project}:policy if not using  'defaultQueueManager'
+      #enabled: false  # Set true or false, default false
+      #format: ''      # Set string or none
+    MQTT:
+      #policy: ''      # Specify a {policy project}:policy
+      #enabled: false  # Set true or false, default false
+      #format: ''      # Set string or none
+
+Monitoring:
+  MessageFlow:
+    #publicationOn: 'inactive'         # choose 1 of : active|inactive, default inactive
+                                       # Ensure Events.BusinessEvents.MQ|MQTT is set
+    #eventFormat: 'MonitoringEventV2'  # choose 1 of : MonitoringEventV2|WMB
+
+Statistics:
+  # Application message flows will by default inherit Snapshot and Archive values set here
+  Snapshot:
+    #publicationOn: 'inactive'   # choose 1 of : active|inactive, default inactive
+                                 # Also set Events.OperationalEvents.MQ|MQTT for outputFormat json,xml to be published to MQ/MQTT
+    #accountingOrigin: 'none'    # choose 1 of : none|basic
+    #nodeDataLevel: 'none'       # choose 1 of : none|basic|advanced
+    #outputFormat: 'usertrace'   # comma separated list of : csv,bluemix,json,xml,usertrace
+    #threadDataLevel: 'none'     # choose 1 of : none|basic
+  Archive:
+    #archivalOn: 'inactive'      # choose 1 of : active|inactive, default inactive
+                                 # Also set Events.OperationalEvents.MQ|MQTT for outputFormat xml to be published to MQ/MQTT
+    #accountingOrigin: 'none'    # choose 1 of : none|basic
+    #majorInterval: 60           # Sets the interval in minutes at which archive statistics are published
+    #nodeDataLevel: 'none'       # choose 1 of : none|basic|advanced
+    #outputFormat: 'usertrace'   # comma separated list of : csv,xml,usertrace
+    #threadDataLevel: 'none'     # choose 1 of : none|basic
+  Resource:
+    #outputFormat: ''            # comma separated list of : file,bluemix
+    reportingOn: true          # choose 1 of : true|false
+
+UserExits:
+  #activeUserExitList: ''        # Specify the name of an installed user exit to activate.
+  #userExitPath: ''              # Specify the path or paths containing the user exists to be loaded. Multiple paths should be separated by colons on Unix and semi-colons on Windows.
+
+BrokerRegistry:
+  #brokerKeystoreType: 'JKS'
+  #brokerKeystoreFile: ''
+  #brokerKeystorePass: 'brokerKeystore::password'
+  #brokerTruststoreType: 'JKS'
+  #brokerTruststoreFile: ''
+  #brokerTruststorePass: 'brokerTruststore::password'
+  #brokerCRLFileList: ''
+  #brokerEnableCRLDP: ''
+  #allowSSLv3: ''
+  #allowSNI: ''
+  #reenableTransportAlgorithms: ''
+  #reenableCertificateAlgorithms: ''
+  #mqCCDT: ''
+  #httpConnectorPortRange: ''
+  #httpsConnectorPortRange: ''
+  #brokerKerberosConfigFile: ''
+  #brokerKerberosKeytabFile: ''
+  #mqKeyRepository: ''
+
+ResourceManagers:
+  JVM:
+    #jvmVerboseOption: 'none'
+    #jvmDisableClassGC: ''
+    #jvmEnableIncGC: ''
+    #jvmShareClasses: ''
+    #jvmNativeStackSize: -1
+    #jvmJavaOSStackSize: -1
+    #jvmMinHeapSize: 33554432        # minimum JVM  heap size in bytes
+    #jvmMaxHeapSize: 268435456       # maximum JVM heap size in bytes
+    #jvmDebugPort: 0                 # Set non-zero to activate JVM debug port for Toolkit debugging
+    #jvmSystemProperty: ''
+    #keystoreType: ''
+    #keystoreFile: ''
+    #keystorePass: ''
+    #truststoreType: ''
+    #truststoreFile: ''
+    #truststorePass: ''
+    #crlFileList: ''
+    #enableCRLDP: ''
+    #kerberosConfigFile: ''
+    #kerberosKeytabFile: ''
+
+  HTTPConnector:
+    #ListenerPort: 0              # Set non-zero to set a specific port, defaults to 7800
+    #ListenerAddress: '0.0.0.0'   # Set the IP address for the listener to listen on. Default is to listen on all addresses
+    #CORSEnabled: false           # Set the value to true to make the listener respond to valid HTTP CORS requests
+    #CORSAllowOrigins: '*'
+    #CORSAllowCredentials: false
+    #CORSExposeHeaders: 'Content-Type'
+    #CORSMaxAge: -1
+    #CORSAllowMethods: 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS'
+    #CORSAllowHeaders: 'Accept,Accept-Language,Content-Language,Content-Type'
+
+  HTTPSConnector:
+    #ListenerPort: 0                 # Set non-zero to set a specific port, defaults to 7843
+    #ListenerAddress: '0.0.0.0'      # Set the IP address for the listener to listen on. Default is to listen on all addresses
+    #ReqClientAuth: true
+    #KeyAlias: ''
+    #KeyPassword: 'P4s5w0rd'         # Set the password or alias to the password of the key
+    #KeystoreFile: '/path/to/keystore.jks'
+    #KeystorePassword: 'P4s5w0rd'    # Set the password or alias to the password of the keystore
+    #KeystoreType: 'JKS'             # Set the keystore type, can be 'JKS' or 'p12'. Default is JKS.
+    #TruststoreFile: /path/tp/truststore.jks
+    #TruststorePassword: 'P4s5w0rd'  # Set the password or alias to the password of the keystore
+    #TruststoreType: 'JKS'           # Set the truststore type, can be 'JKS' or 'p12'. Default is JKS.
+    #CORSEnabled: false   # Set the value to true to make the listener respond to valid HTTP CORS requests
+    #CORSAllowOrigins: '*'
+    #CORSAllowCredentials: false
+    #CORSExposeHeaders: 'Content-Type'
+    #CORSMaxAge: -1
+    #CORSAllowMethods: 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS'
+    #CORSAllowHeaders: 'Accept,Accept-Language,Content-Language,Content-Type'
+
+  ActivityLogManager:
+    #activityLogEnabled: true
+    #defaultLogSizePerThread: 1000
+    #minSeverityLevel: 'INFO'        # choose one of INFO|WARN|ERROR
+
+  DatabaseConnectionManager:
+    #maxConnectionAge: 60                       # Set to -1 to never release connections
+    #useDefaultSchemaForStoredProcedures: true
+
+  SocketConnectionManager:
+    #allowedAuthTypes: 'platform default'   # Sets the allowable authentication mechanisms when responding to a HTTP 401 response during a HTTP based request.
+                                            # Multiple values can be specified and should be semi-colon separated.
+                                            # Valid values are 'basic', 'ntlm', 'negotiate', 'nego2', 'all', 'iwa', 'platform default'.
+                                            # Unix only supports 'basic'. Windows supports all values.
+                                            # 'platform default' is expanded to "basic" on unix and "basic; ntlm; negotiate; nego2" on windows.
+                                            # 'iwa' is expanded to mean "ntlm; negotiate; nego2"
+    #allowNtlmNegotiation: true   # Set to 'false' to prevent NTLM from being negotiated with the SPNEGO and SPNEGO-2 protocols.
+    #negotiateMutualAuth: false   # Set to 'true' if you require mutual authentication when the Kerberos protocol is negotiated.
+    #preemptiveAuthType: ''  # Configure the authentication mechanism to use preemptively when making a HTTP based request.
+                             # Valid values are '', 'basic', 'ntlm', 'negotiate', 'nego2'.
+                             # Set to the default value of '' to disable preemptive authentication.
+    #tcpNoDelay: true     # Set to 'false' to disable the tcpnodelay setting for non-SSL sockets created for HTTP based requests.
+    #tcpNoDelaySSL: true  # Set to 'false' to disable the tcpnodelay setting for SSL sockets created for HTTP based requests.
+
+  ContentBasedFiltering:
+    #cbfEnabled: false     # Set to true to enable content-based filtering
+    #evaluationThreads: 1  # Configures the number of evaluation threads available for content-based filtering
+    #validationThreads: 1  # Configured the number of validation threads available for content-based filtering
+
+  FTEAgent:
+    #coordinationQMgr: '' # Set to the name of the coordination Queue Manager to be used by the embedded FTE Agent if not using the default Queue Manager as the coordination Queue Manager.
+
+ConnectorProviders:
+  SAPConnectorProvider:
+    #jarsURL: 'default_Path'     # Set to the absolute path containing the SAP JCo JARs.
+    #nativeLibs: 'default_Path'  # Set to the absolute path containing the SAP JCo libraries.
+  SiebelConnectorProvider:
+    #jarsURL: 'default_Path'     # Set to the absolute path containing the Siebel JARs.
+    #nativeLibs: 'default_Path'  # Set to the absolute path containing the Siebel libraries.
+    #siebelPropertiesURL:  ''  # Set to the location of the siebel.properties file.
+  PeopleSoftConnectorProvider:
+    #jarsURL: 'default_Path'     # Set to the absolute path containing the PeopleSoft JARs.
+  JDEdwardsConnectorProvider:
+    #jarsURL: 'default_Path'     # Set to the absolute path containing the JDEdwards JARs.
+    #nativeLibs: 'default_Path'  # Set to the absolute path containing the JDEdwards libraries.
+
+#  MyCustomProvider:
+#    connectorClassName: 'com.company.connector.hyper.LoopConnectorFactory'
+#    jarsURL: 'installation_directory/runtime/LoopConnector' # absolute path
+#    nativeLibs: 'default_Path' # absolute path or special value "default_Path"
+
+UserVariables:
+  #Thing1: 'value'
