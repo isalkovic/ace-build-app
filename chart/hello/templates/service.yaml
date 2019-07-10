@@ -8,6 +8,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
   - name: http
+    port: {{ .Values.service.servicePortHttps }}
+  - name: admin
     port: {{ .Values.service.servicePort }}
   selector:
     app: "{{  .Chart.Name }}-selector"
