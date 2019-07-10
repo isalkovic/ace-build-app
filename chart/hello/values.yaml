@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: hello
+  repository: hello-ace
   tag: v1.0.0
   pullPolicy: IfNotPresent
   resources:
