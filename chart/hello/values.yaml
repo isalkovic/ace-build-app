@@ -13,7 +13,8 @@ image:
 service:
   name: Node
   type: NodePort
-  servicePort: 1414
+  servicePort: 7600
+  servicePortHttps: 7800
 hpa:
   enabled: false
   minReplicas: 1
