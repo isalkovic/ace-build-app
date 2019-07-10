@@ -1,0 +1,8 @@
+apiVersion: v1
+name: ibm-ace
+description: A Helm chart for ACE
+version: 1.0.0
+sources:
+  - https://github.ibm.com/Cloud-Integration/ace-icp
+home: https://appconnect.ibmcloud.com/
+icon: https://appconnect.ibmcloud.com/wp-content/themes/appconnect-new/img/icons/favicon.ico
