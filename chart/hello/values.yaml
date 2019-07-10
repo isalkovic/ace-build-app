@@ -13,8 +13,7 @@ image:
 service:
   name: Node
   type: NodePort
-  servicePort: 9080
-  servicePortHttps: 9443
+  servicePort: 1414
 hpa:
   enabled: false
   minReplicas: 1
