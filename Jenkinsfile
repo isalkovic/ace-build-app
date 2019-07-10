@@ -127,7 +127,7 @@ podTemplate(
 	    
             if (fileExists(chartFolder)) {
                // find the likely chartFolder location
-               realChartFolder = getChartFolder('chart/hello', chartFolder)
+               realChartFolder = getChartFolder('ibm-ace', chartFolder)
                def yamlContent = "image:"
                yamlContent += "\n  repository: ${registry}${namespace}/${image}"
                if (imageTag) yamlContent += "\n  tag: \\\"${imageTag}\\\""
