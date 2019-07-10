@@ -75,22 +75,22 @@ podTemplate(
                   print "Error in Extract: " + ex.toString()
                }
 	    }
-            stage('Build'){
+            stage('Build docker image'){
 	       try {
                   // checkout scm
                   container('docker') {
 		     echo 'Set Base Image'
-		     sh "sed -i 's/^FROM.*/FROM ${baseimage}/g' Dockerfile"
+		    // sh "sed -i 's/^FROM.*/FROM ${baseimage}/g' Dockerfile"
 		     sh "cat Dockerfile"
 		     
                      echo 'Start Building Image'
 		     
-		     imageTag = gitCommit
+		     imageTag = 1 //gitCommit
                      def buildCommand = "docker build -t ${image}:${imageTag} "
                      buildCommand += "--label org.label-schema.schema-version=\"1.0\" "
                      // def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
                      // buildCommand += "--label org.label-schema.vcs-url=\"${scmUrl}\" "
-                     buildCommand += "--label org.label-schema.vcs-ref=\"${gitCommit}\" "  
+                     buildCommand += "--label org.label-schema.vcs-ref=\"${imageTag}\" "  
                      buildCommand += "--label org.label-schema.name=\"${image}\" "
                      def buildDate = sh(returnStdout: true, script: "date -Iseconds").trim()
                      buildCommand += "--label org.label-schema.build-date=\"${buildDate}\" "
