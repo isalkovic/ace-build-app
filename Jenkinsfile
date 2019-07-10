@@ -163,7 +163,7 @@ podTemplate(
                     }
                   } else {	       
                     echo "Attempting to deploy the test release"
-                    def deployCommand = "helm install ${realChartFolder} --wait --set test=true --values pipeline.yaml --namespace ${namespace} --name ${tempHelmRelease}"
+                    def deployCommand = "helm install ${realChartFolder} --wait --set test=true --set license=accept --values pipeline.yaml --namespace ${namespace} --name ${tempHelmRelease}"
                     if (fileExists("chart/overrides.yaml")) {
                        deployCommand += " --values chart/overrides.yaml"
                     }
