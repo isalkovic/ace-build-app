@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # license must be set to "accept" in order to accept the terms of the IBM license
-license: "not accepted"
+license: "accept"
 
 # Whether the application is running production workloads
 productionDeployment: false
@@ -27,7 +27,7 @@ queueManagerEnabled: false
 image:
   repository:
     # name of the ace only server image
-    aceonly: ace-only
+    aceonly: hello-container-ace
     # name of the ace with mq server image
     acemq: ace-mq
   # tag is the tag to use for the container repository
