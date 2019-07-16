@@ -136,25 +136,26 @@ podTemplate(
 
 	    stage ('Deploy') {
 	       echo'Deploy helm chart'
-               echo "testing against namespace " + namespace
-               String tempHelmRelease = (image + "-" + namespace)
+         echo "testing against namespace " + namespace
+         String tempHelmRelease = (image + "-" + namespace)
 
                container ('kubectl') {
-	          echo 'In kubectl container'
-
-               }	
+	                echo 'In kubectl container'
+               }
+               
                container ('helm') {
-	          // Check if the release exists at all.
-                  isReleaseExists = sh(script: "helm list -q --namespace ${namespace} ${helmTlsOptions} | tr '\\n' ','", returnStdout: true)
-		       echo "::::Checking if release " + tempHelmRelease + " exists... found " + isReleaseExists
-                  if (isReleaseExists.contains("${tempHelmRelease}")) {
-                    // The release exists, check it's status.
-                    releaseStatus = sh(script: "helm status ${tempHelmRelease} -o json ${helmTlsOptions} | jq '.info.status.code'", returnStdout: true).trim()
-			  echo "::::Helm release status is " + releaseStatus
-                    if (releaseStatus != "1") {
+                 // Check if the release exists at all.
+                 isReleaseExists = sh(script: "helm list -q --namespace ${namespace} ${helmTlsOptions} | tr '\\n' ','", returnStdout: true)
+		             echo "::::Checking if release " + tempHelmRelease + " exists... found " + isReleaseExists
+                 if (isReleaseExists.contains("${tempHelmRelease}")) {
+                   // The release exists, check it's status.
+                   releaseStatus = sh(script: "helm status ${tempHelmRelease} -o json ${helmTlsOptions} | jq '.info.status.code'", returnStdout: true).trim()
+			             echo "::::Helm release status is " + releaseStatus
+                   if (releaseStatus != "1") {
                       // The release is in FAILED state. Attempt to rollback.
                       releaseRevision = sh (script: "helm history ${tempHelmRelease} ${helmTlsOptions} | tail -1 | awk '{ print \$1}'", returnStdout: true).trim()
-                      if (releaseRevision == "1") {
+                      echo "::::Helm release revision is " + releaseRevision
+		                  if (releaseRevision == "1") {
                         // This is the only revision available - purge and proceed to reinstall.
                         sh "helm del --purge ${tempHelmRelease} ${helmTlsOptions}"
                       } else {
@@ -162,27 +163,26 @@ podTemplate(
                         releaseRevision = sh (script: "helm history ${tempHelmRelease} ${helmTlsOptions} | tail -2 | head -1 | awk '{ print \$1}'", returnStdout: true).trim()
                         sh "helm rollback ${tempHelmRelease} ${releaseRevision} ${helmTlsOptions}"
                       }
-                    }
-                  } else {	       
+                  } else {
                     echo "Attempting to deploy the test release"
                     def deployCommand = "helm install ${realChartFolder} --wait --set test=true --set license=accept --set image.repository.aceonly=${registry}${namespace}/${image} --set image.tag=${imageTag} --namespace ${namespace} --name ${tempHelmRelease}"
-			  if (fileExists("chart/overrides.yaml")) {
-                       deployCommand += " --values chart/overrides.yaml"
-                    }
-                    if (helmSecret) {
-                       echo "Adding --tls to your deploy command"
-                       deployCommand += helmTlsOptions
-                    }
-			  echo "::::Deploying helm with command : " + deployCommand
-                    testDeployAttempt = sh(script: "${deployCommand} > deploy_attempt.txt", returnStatus: true)
-                    if (testDeployAttempt != 0) {
-                       echo "Warning, did not deploy the test release into the test namespace successfully, error code is: ${testDeployAttempt}" 
-                       echo "This build will be marked as a failure: halting after the deletion of the test namespace."
-                    }
-                    printFromFile("deploy_attempt.txt")
+			                 if (fileExists("chart/overrides.yaml")) {
+                         deployCommand += " --values chart/overrides.yaml"
+                       }
+                       if (helmSecret) {
+                         echo "Adding --tls to your deploy command"
+                         deployCommand += helmTlsOptions
+                       }
+			                 echo "::::Deploying helm with command : " + deployCommand
+                       testDeployAttempt = sh(script: "${deployCommand} > deploy_attempt.txt", returnStatus: true)
+                       if (testDeployAttempt != 0) {
+                         echo "Warning, did not deploy the test release into the test namespace successfully, error code is: ${testDeployAttempt}" 
+                         echo "This build will be marked as a failure: halting after the deletion of the test namespace."
+                       }
+                       printFromFile("deploy_attempt.txt")
                   }
                }
-	    }
+	     }
          }
       }
       
