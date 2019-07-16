@@ -10,8 +10,8 @@ def mvnCommands = (env.mvnCommands == null) ? 'package' : env.mvnCommands
 def mavenSettingsConfigMap = env.MAVEN_SETTINGS_CONFIG_MAP?.trim()
 def test = (env.TEST ?: "true").toBoolean()
 
-def image = (env.IMAGE ?: "hello-container-ace").trim()
-def baseimage = (env.BASEIMAGE ?: "ibmcom/ace:latest").trim()
+def image = (env.IMAGE ?: "hello-ace").trim()
+def baseimage = (env.DOCKER_TRIGGER_REPO_NAME ?: "ibmcom/ace:latest").trim()
 def alwaysPullImage = (env.ALWAYS_PULL_IMAGE == null) ? true : env.ALWAYS_PULL_IMAGE.toBoolean()
 def libertyLicenseJarBaseUrl = (env.LIBERTY_LICENSE_JAR_BASE_URL ?: "").trim()
 def registry = (env.REGISTRY ?: "icptest.icp:8500").trim()
@@ -80,12 +80,12 @@ podTemplate(
                   // checkout scm
                   container('docker') {
 		     echo 'Set Base Image'
-		    // sh "sed -i 's/^FROM.*/FROM ${baseimage}/g' Dockerfile"
-		     sh "cat Dockerfile"
+		     sh "sed -i 's/^FROM.*/FROM ${baseimage}/g' DockerfileWithBAR"
+		     sh "cat DockerfileWithBAR"
 		     
                      echo 'Start Building Image'
 		     
-		     imageTag = 1 //gitCommit
+		     imageTag = gitCommit
                      def buildCommand = "docker build -t ${image}:${imageTag} "
                      buildCommand += "--label org.label-schema.schema-version=\"1.0\" "
                      // def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
