@@ -46,8 +46,10 @@ podTemplate(
 	containerTemplate(name: 'helm', image: 'icptest.icp:8500/ibmcom/helm:1.0.0', ttyEnabled: true, command: 'cat')
     ],
     volumes: volumes
-    ) {
-        node('test'){
+    ) 
+
+    {
+      node('test'){
 	    def gitCommit
             def previousCommit
             def gitCommitMessage
@@ -56,7 +58,7 @@ podTemplate(
 	    def imageTag = null
 
             stage ('Extract') {
-	       try {
+	             try {
                   checkout scm
                   fullCommitID = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
                   gitCommit = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
@@ -68,61 +70,64 @@ podTemplate(
                      echo "Previous commit exists: ${previousCommit}"
                   }
                   gitCommitMessage = sh(script: 'git log --format=%B -n 1 ${gitCommit}', returnStdout: true)
-	          gitCommitMessage = gitCommitMessage.replace("'", "\'");
+	                gitCommitMessage = gitCommitMessage.replace("'", "\'");
                   echo "Git commit message is: ${gitCommitMessage}"
                   echo "Checked out git commit ${gitCommit}"
                } catch(Exception ex) {
                   print "Error in Extract: " + ex.toString()
                }
-	    }
+	          }
+            
             stage('Build docker image'){
-	       try {
+	             try {
                   // checkout scm
                   container('docker') {
-		     echo "Setting Base Image info in Dockerfile to :: ${baseimage}"
-		     sh "sed -i '1s_^FROM.*_FROM ${baseimage}_' Dockerfile"
-		     sh "cat Dockerfile"
+		              echo "Setting Base Image info in Dockerfile to :: ${baseimage}"
+		              sh "sed -i '1s_^FROM.*_FROM ${baseimage}_' Dockerfile"
+		              sh "cat Dockerfile"
 		     
-                     echo 'Start Building Image'
+                  echo 'Start Building Image'
 		     
-		     imageTag = gitCommit
-                     def buildCommand = "docker build -t ${image}:${imageTag} "
-                     buildCommand += "--label org.label-schema.schema-version=\"1.0\" "
-                     // def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-                     // buildCommand += "--label org.label-schema.vcs-url=\"${scmUrl}\" "
-                     buildCommand += "--label org.label-schema.vcs-ref=\"${imageTag}\" "  
-                     buildCommand += "--label org.label-schema.name=\"${image}\" "
-                     def buildDate = sh(returnStdout: true, script: "date -Iseconds").trim()
-                     buildCommand += "--label org.label-schema.build-date=\"${buildDate}\" "
-                     if (alwaysPullImage) {
+		              imageTag = gitCommit
+                  def buildCommand = "docker build -t ${image}:${imageTag} "
+                  buildCommand += "--label org.label-schema.schema-version=\"1.0\" "
+                  // def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+                  // buildCommand += "--label org.label-schema.vcs-url=\"${scmUrl}\" "
+                  buildCommand += "--label org.label-schema.vcs-ref=\"${imageTag}\" "  
+                  buildCommand += "--label org.label-schema.name=\"${image}\" "
+                  def buildDate = sh(returnStdout: true, script: "date -Iseconds").trim()
+                  buildCommand += "--label org.label-schema.build-date=\"${buildDate}\" "
+                  if (alwaysPullImage) {
                         buildCommand += " --pull=true"
-                     }
-                     if (previousCommit) {
+                  }
+                  if (previousCommit) {
                         buildCommand += " --cache-from ${registry}${image}:${previousCommit}"
-                     }
+                  }
                     
-                     buildCommand += " ."
-		     if (registrySecret) {
+                  buildCommand += " ."
+
+                  if (registrySecret) {
                         sh "ln -s -f /msb_reg_sec/.dockercfg /home/jenkins/.dockercfg"
                         sh "mkdir -p /home/jenkins/.docker"
                         sh "ln -s -f /msb_reg_sec/.dockerconfigjson /home/jenkins/.docker/config.json"
-                     }
-                     sh buildCommand
-                     if (registry) {
-		        // sh "docker login -u=${dockerUser} -p=${dockerPassword} ${registry}"
-			echo "Tagging image ${image}:${imageTag} ${registry}${namespace}/${image}:${imageTag}"
-                        sh "docker tag ${image}:${imageTag} ${registry}${namespace}/${image}:${imageTag}"
-		        echo 'Pushing to Docker registry'
-                        sh "docker push ${registry}${namespace}/${image}:${imageTag}"
-		        'Done pushing to Docker registry'
-                     }
-		  }
-               } catch(Exception ex) {
+                  }
+                  sh buildCommand
+
+                  if (registry) {
+		                  // sh "docker login -u=${dockerUser} -p=${dockerPassword} ${registry}"
+			                echo "Tagging image ${image}:${imageTag} ${registry}${namespace}/${image}:${imageTag}"
+                      sh "docker tag ${image}:${imageTag} ${registry}${namespace}/${image}:${imageTag}"
+		                  echo 'Pushing to Docker registry'
+                      sh "docker push ${registry}${namespace}/${image}:${imageTag}"
+		                  echo 'Done pushing to Docker registry'
+                  }
+		           }
+              } catch(Exception ex) {
                    print "Error in Docker build: " + ex.toString()
-	       }
+	              }
             }
 	    
-	    def realChartFolder = null
+	          def realChartFolder = null
             def testsAttempted = false
 	    
             if (fileExists(chartFolder)) {
@@ -182,9 +187,10 @@ podTemplate(
                        printFromFile("deploy_attempt.txt")
                   }
                }
-	     }
+	          }
          }
       }
+    }
       
 def printTime(String message) {
    time = new Date().format("ddMMyy.HH:mm.ss", TimeZone.getTimeZone('Europe/Amsterdam'))
