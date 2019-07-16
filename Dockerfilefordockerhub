@@ -2,4 +2,4 @@ FROM ibmcom/ace
 ENV CONFIG=server.conf.yaml
 COPY $CONFIG /home/aceuser/ace-server/overrides/
 RUN bash -c 'mqsicreateworkdir /home/aceuser/ace-server'
-RUN bash -c 'touch /home/aceuser/imageBuildTrigger8.file'
+RUN bash -c 'touch /home/aceuser/imageBuildTrigger9.file'
