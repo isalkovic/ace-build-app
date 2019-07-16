@@ -146,9 +146,11 @@ podTemplate(
                container ('helm') {
 	          // Check if the release exists at all.
                   isReleaseExists = sh(script: "helm list -q --namespace ${namespace} ${helmTlsOptions} | tr '\\n' ','", returnStdout: true)
+		       echo "::::Checking if release " + tempHelmRelease + " exists... found " + isReleaseExists
                   if (isReleaseExists.contains("${tempHelmRelease}")) {
                     // The release exists, check it's status.
                     releaseStatus = sh(script: "helm status ${tempHelmRelease} -o json ${helmTlsOptions} | jq '.info.status.code'", returnStdout: true).trim()
+			  echo "::::Helm release status is " + releaseStatus
                     if (releaseStatus != "1") {
                       // The release is in FAILED state. Attempt to rollback.
                       releaseRevision = sh (script: "helm history ${tempHelmRelease} ${helmTlsOptions} | tail -1 | awk '{ print \$1}'", returnStdout: true).trim()
@@ -171,6 +173,7 @@ podTemplate(
                        echo "Adding --tls to your deploy command"
                        deployCommand += helmTlsOptions
                     }
+			  echo "::::Deploying helm with command : " + deployCommand
                     testDeployAttempt = sh(script: "${deployCommand} > deploy_attempt.txt", returnStatus: true)
                     if (testDeployAttempt != 0) {
                        echo "Warning, did not deploy the test release into the test namespace successfully, error code is: ${testDeployAttempt}" 
