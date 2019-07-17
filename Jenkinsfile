@@ -57,7 +57,9 @@ podTemplate(
 	    
 	    def imageTag = null
 
-            stage ('Extract') {
+	    def slackResponse = slackSend(channel: "k8s_cont-adoption", message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> Has been started.")
+            
+	      stage ('Extract') {
 	             try {
                   checkout scm
                   fullCommitID = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
@@ -184,7 +186,13 @@ podTemplate(
                        if (testDeployAttempt != 0) {
                          echo "Warning, did not deploy the test release into the test namespace successfully, error code is: ${testDeployAttempt}" 
                          echo "This build will be marked as a failure: halting after the deletion of the test namespace."
+			 slackSend (channel: slackResponse.threadId, color: '#b31433', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> failed.")
+
                        }
+		       else {
+			      slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> upgraded successfully.")
+
+		       }
                        printFromFile("deploy_attempt.txt")
                   
                }
