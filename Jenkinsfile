@@ -186,7 +186,7 @@ podTemplate(
                        if (testDeployAttempt != 0) {
                          echo "Warning, did not deploy the test release into the test namespace successfully, error code is: ${testDeployAttempt}" 
                          echo "This build will be marked as a failure: halting after the deletion of the test namespace."
-			 slackSend (channel: slackResponse.threadId, color: '#b31433', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> failed.")
+			 slackSend (channel: slackResponse.threadId, iconEmoji: 'v', color: '#b31433', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> failed.")
 
                        }
 		       else {
