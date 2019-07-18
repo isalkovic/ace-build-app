@@ -171,7 +171,30 @@ podTemplate(
                         sh "helm rollback ${tempHelmRelease} ${releaseRevision} ${helmTlsOptions}"
                       }
                   }
+		  else {
+		      echo "RELEASE IS RUNNING"
+                      // The release is in RUNNING state. Attempt to upgrade
+		      getValues = sh (script: "helm get values ${tempHelmRelease} -output yaml ${helmTlsOptions} > values.yaml", returnStatus: true)
+                      def upgradeCommand = "helm upgrade ${tempHelmRelease} ${realChartFolder} --wait --values values.yaml --namespace ${namespace}"
+                      if (fileExists("chart/overrides.yaml")) {
+                        upgradeCommand += " --values chart/overrides.yaml"
+                      }
+                      if (helmSecret) {
+                        echo "Adding --tls to your deploy command"
+                        upgradeCommand += helmTlsOptions
+                      }
+		      echo "UPGRADING COMMAND: ${upgradeCommand}"
+                      testUpgradeAttempt = sh(script: "${upgradeCommand} > upgrade_attempt.txt", returnStatus: true)
+                      if (testUpgradeAttempt != 0) {
+                        echo "Warning, did not upgrade the test release into the test namespace successfully, error code is: ${testUpgradeAttempt}" 
+                        echo "This build will be marked as a failure: halting after the deletion of the test namespace."
+                      } else {
+		        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> upgraded successfully.")
+                      }
+                      printFromFile("upgrade_attempt.txt") 
+		    }
 		 } 
+		 else {
                     echo "Attempting to deploy the test release"
                     def deployCommand = "helm install ${realChartFolder} --wait --set test=true --set license=accept --set image.repository.aceonly=${registry}${namespace}/${image} --set image.tag=${imageTag} --namespace ${namespace} --name ${tempHelmRelease}"
 			if (fileExists("chart/overrides.yaml")) {
@@ -194,7 +217,7 @@ podTemplate(
 
 		       }
                        printFromFile("deploy_attempt.txt")
-                  
+		 }
                }
 	    
          }
