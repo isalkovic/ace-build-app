@@ -1,2 +1,2 @@
 FROM ibmcom/ace
-RUN bash -c 'touch /home/aceuser/imageBuildTrigger99.file'
+RUN bash -c 'touch /home/aceuser/imageBuildTrigger909.file'
