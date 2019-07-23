@@ -59,7 +59,7 @@ podTemplate(
 
 	    def slackResponse = slackSend(channel: "k8s_cont-adoption", message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> Has been started.")
             
-	      stage ('Extract') {
+	      stage ('Get code and config from Git') {
 	             try {
                   checkout scm
                   fullCommitID = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
@@ -80,7 +80,7 @@ podTemplate(
                }
 	          }
             
-            stage('Build docker image'){
+            stage('Build ACE docker image'){
 	             try {
                   // checkout scm
                   container('docker') {
@@ -141,7 +141,7 @@ podTemplate(
                sh "echo \"${yamlContent}\" > pipeline.yaml"
             }
 
-	    stage ('Deploy') {
+	    stage ('Deploy ACE to k8s') {
 	       echo'Deploy helm chart'
          echo "testing against namespace " + namespace
          String tempHelmRelease = (image + "-" + namespace)
