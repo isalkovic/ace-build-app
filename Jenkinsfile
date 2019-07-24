@@ -183,7 +183,7 @@ podTemplate(
 		  else {
 		      echo "RELEASE IS RUNNING"
                       // The release is in RUNNING state. Attempt to upgrade
-		      getValues = sh (script: "helm get values ${tempHelmRelease} -output yaml ${helmTlsOptions} > values.yaml", returnStatus: true)
+		      getValues = sh (script: "helm get values ${tempHelmRelease} --output yaml ${helmTlsOptions} > values.yaml", returnStatus: true)
                       def upgradeCommand = "helm upgrade ${tempHelmRelease} ${realChartFolder} --wait --values values.yaml --namespace ${namespace}"
                       if (fileExists("chart/overrides.yaml")) {
                         upgradeCommand += " --values chart/overrides.yaml"
