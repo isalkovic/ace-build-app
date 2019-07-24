@@ -6,12 +6,14 @@ import groovy.json.JsonSlurperClassic;
 
 def build = (env.BUILD ?: "true").toBoolean()
 def deploy = (env.DEPLOY ?: "true").toBoolean()
-def mvnCommands = (env.mvnCommands == null) ? 'package' : env.mvnCommands
-def mavenSettingsConfigMap = env.MAVEN_SETTINGS_CONFIG_MAP?.trim()
 def test = (env.TEST ?: "true").toBoolean()
 
 def image = (env.IMAGE ?: "hello-ace").trim()
+def dockerimage = (env.DOCKER_TRIGGER_REPO_NAME ?: "ibmcom/ace:latest").trim()
+printTime("***** ${dockerimage} *****")
 def baseimage = (env.DOCKER_TRIGGER_REPO_NAME ?: "ibmcom/ace:latest").trim()
+def basetag = (env.DOCKER_TRIGGER_TAG ?: "latest").trim()
+
 def alwaysPullImage = (env.ALWAYS_PULL_IMAGE == null) ? true : env.ALWAYS_PULL_IMAGE.toBoolean()
 def libertyLicenseJarBaseUrl = (env.LIBERTY_LICENSE_JAR_BASE_URL ?: "").trim()
 def registry = (env.REGISTRY ?: "icptest.icp:8500").trim()
@@ -93,13 +95,13 @@ podTemplate(
 	             try {
                   // checkout scm
                   container('docker') {
-		              echo "Setting Base Image info in Dockerfile to :: ${baseimage}"
-		              sh "sed -i '1s_^FROM.*_FROM ${baseimage}_' Dockerfile"
-		              sh "cat Dockerfile"
-		     
+		     echo "Setting Base Image info in Dockerfile to :: ${baseimage}:${basetag}"
+		     sh "sed -i '1s_^FROM.*_FROM ${baseimage}:${basetag}_' Dockerfile"
+		     sh "cat Dockerfile"
+		
                   echo 'Start Building Image'
 		     
-		              imageTag = gitCommit
+		  imageTag = "${basetag}"
                   def buildCommand = "docker build -t ${image}:${imageTag} "
                   buildCommand += "--label org.label-schema.schema-version=\"1.0\" "
                   // def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
