@@ -79,6 +79,14 @@ podTemplate(
                   print "Error in Extract: " + ex.toString()
                }
 	          }
+	      
+	stage('SCAN base ACE image') {
+          container ('docker') {
+		def imageLine = "${baseimage}"
+  		writeFile file: 'anchore_images', text: imageLine
+  		anchore name: 'anchore_images'
+		}
+ 	}
             
             stage('Build ACE docker image'){
 	             try {
@@ -141,13 +149,6 @@ podTemplate(
                sh "echo \"${yamlContent}\" > pipeline.yaml"
             }
 	      
-	      stage('Container Security Scan') {
-          container ('docker') {
-def imageLine = '${registry}${namespace}/${image}:${imageTag}'
-  writeFile file: 'anchore_images', text: imageLine
-  anchore name: 'anchore_images'
-}
- }
 
 	    stage ('Deploy ACE to k8s') {
 	       echo'Deploy helm chart'
