@@ -8,7 +8,7 @@ def build = (env.BUILD ?: "true").toBoolean()
 def deploy = (env.DEPLOY ?: "true").toBoolean()
 def test = (env.TEST ?: "true").toBoolean()
 
-def image = (env.IMAGE ?: "hello-ace").trim()
+def image = (env.IMAGE ?: "ace-cont-adopt").trim()
 def dockerimage = (env.DOCKER_TRIGGER_REPO_NAME ?: "ibmcom/ace:latest").trim()
 printTime("***** ${dockerimage} *****")
 def baseimage = (env.DOCKER_TRIGGER_REPO_NAME ?: "ibmcom/ace:latest").trim()
