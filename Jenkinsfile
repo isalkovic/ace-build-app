@@ -80,12 +80,12 @@ podTemplate(
                }
 	          }
 	      
-	stage('SCAN base ACE image') {
-          container ('docker') {
-		def imageLine = "${baseimage}"
-  		writeFile file: 'anchore_images', text: imageLine
-  		anchore name: 'anchore_images'
-		}
+//	stage('SCAN base ACE image') {
+ //         container ('docker') {
+//		def imageLine = "${baseimage}"
+ // 		writeFile file: 'anchore_images', text: imageLine
+ // 		anchore name: 'anchore_images'
+//		}
   //	        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> scanned successfully.")
 
  	}
