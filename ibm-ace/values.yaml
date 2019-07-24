@@ -27,7 +27,7 @@ queueManagerEnabled: false
 image:
   repository:
     # name of the ace only server image
-    aceonly: hello-container-ace
+    aceonly: hello-ace
     # name of the ace with mq server image
     acemq: ace-mq
   # tag is the tag to use for the container repository
