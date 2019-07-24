@@ -57,7 +57,7 @@ podTemplate(
 	    
 	    def imageTag = null
 
-	    def slackResponse = slackSend(channel: "k8s_cont-adoption", message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> Has been started.")
+//	    def slackResponse = slackSend(channel: "k8s_cont-adoption", message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> Has been started.")
             
 	      stage ('Get code and config from Git') {
 	             try {
@@ -86,6 +86,8 @@ podTemplate(
   		writeFile file: 'anchore_images', text: imageLine
   		anchore name: 'anchore_images'
 		}
+  //	        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> scanned successfully.")
+
  	}
             
             stage('Build ACE docker image'){
@@ -198,7 +200,7 @@ podTemplate(
                         echo "Warning, did not upgrade the test release into the test namespace successfully, error code is: ${testUpgradeAttempt}" 
                         echo "This build will be marked as a failure: halting after the deletion of the test namespace."
                       } else {
-		        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> upgraded successfully.")
+	//	        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> upgraded successfully.")
                       }
                       printFromFile("upgrade_attempt.txt") 
 		    }
@@ -218,11 +220,11 @@ podTemplate(
                        if (testDeployAttempt != 0) {
                          echo "Warning, did not deploy the test release into the test namespace successfully, error code is: ${testDeployAttempt}" 
                          echo "This build will be marked as a failure: halting after the deletion of the test namespace."
-			 slackSend (channel: slackResponse.threadId, iconEmoji: ':see_no_evil:', color: '#b31433', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> failed.")
+	//		 slackSend (channel: slackResponse.threadId, iconEmoji: ':see_no_evil:', color: '#b31433', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> failed.")
 
                        }
 		       else {
-			      slackSend (channel: slackResponse.threadId, iconEmoji: ':v:', color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> upgraded successfully.")
+	//		      slackSend (channel: slackResponse.threadId, iconEmoji: ':v:', color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> upgraded successfully.")
 
 		       }
                        printFromFile("deploy_attempt.txt")
