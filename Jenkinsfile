@@ -140,6 +140,14 @@ podTemplate(
                if (imageTag) yamlContent += "\n  tag: \\\"${imageTag}\\\""
                sh "echo \"${yamlContent}\" > pipeline.yaml"
             }
+	      
+	      stage('Container Security Scan') {
+          container ('docker') {
+def imageLine = '${registry}${namespace}/${image}:${imageTag}'
+  writeFile file: 'anchore_images', text: imageLine
+  anchore name: 'anchore_images'
+}
+ }
 
 	    stage ('Deploy ACE to k8s') {
 	       echo'Deploy helm chart'
