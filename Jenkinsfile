@@ -84,7 +84,7 @@ podTemplate(
 	      
 	stage('SCAN base ACE image') {
           container ('docker') {
-		def imageLine = "${baseimage}"
+		def imageLine = "${baseimage}:${basetag}"
   		writeFile file: 'anchore_images', text: imageLine
   		anchore name: 'anchore_images'
 		}
