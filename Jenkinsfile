@@ -82,14 +82,14 @@ podTemplate(
                }
 	          }
 	      
-//	stage('SCAN base ACE image') {
- //         container ('docker') {
-//		def imageLine = "${baseimage}:${basetag}"
- // 		writeFile file: 'anchore_images', text: imageLine
-// 		anchore name: 'anchore_images'
-//		}
-//  	        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> scanned successfully.")
- //	}
+	stage('SCAN base ACE image') {
+          container ('docker') {
+		def imageLine = "${baseimage}:${basetag}"
+  		writeFile file: 'anchore_images', text: imageLine
+ 		anchore name: 'anchore_images'
+		}
+  	        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> scanned successfully.")
+ 	}
             
             stage('Build ACE docker image'){
 	             try {
