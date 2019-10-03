@@ -61,7 +61,8 @@ podTemplate(
 
 	    def slackResponse = slackSend(channel: "k8s_cont-adoption", message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> Has been started.")
             
-	      stage ('Get code and config from Git') {
+// ==============================================================================================================
+	 stage ('Get code and config from Git') {
 	             try {
                   checkout scm
                   fullCommitID = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
@@ -81,7 +82,8 @@ podTemplate(
                   print "Error in Extract: " + ex.toString()
                }
 	          }
-	      
+
+// ==============================================================================================================
 	stage('SCAN base ACE image') {
           container ('docker') {
 		def imageLine = "${baseimage}:${basetag}"
@@ -90,8 +92,10 @@ podTemplate(
 		}
   	        slackSend (channel: slackResponse.threadId, color: '#199515', message: "*$JOB_NAME*: <$BUILD_URL|Build #$BUILD_NUMBER> scanned successfully.")
  	}
-            
-            stage('Build ACE docker image'){
+	      
+// ==============================================================================================================
+	      
+        stage('Build ACE docker image'){
 	             try {
                   // checkout scm
                   container('docker') {
@@ -152,8 +156,8 @@ podTemplate(
                sh "echo \"${yamlContent}\" > pipeline.yaml"
             }
 	      
-
-	    stage ('Deploy ACE to k8s') {
+// ==============================================================================================================
+	stage ('Deploy ACE to k8s') {
 	       echo'Deploy helm chart'
          echo "testing against namespace " + namespace
          String tempHelmRelease = (image + "-" + namespace)
